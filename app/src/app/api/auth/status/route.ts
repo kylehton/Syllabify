@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 
@@ -19,8 +19,7 @@ export async function GET() {
     const isExpired = Date.now() > tokenExpiry;
 
     if (isExpired && payload.refreshToken) {
-      // Refresh the token (implement refresh logic here)
-      // For now, return expired status
+      // Refresh token
       return NextResponse.json({ 
         authenticated: false, 
         expired: true 

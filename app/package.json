@@ -12,16 +12,24 @@
   "dependencies": {
     "gapi-script": "^1.2.0",
     "jose": "^6.1.0",
+    "multer": "^2.0.2",
     "next": "15.5.2",
+    "next-connect": "^1.0.0",
+    "pdf-extraction": "^1.0.2",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^1.1.1",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-pdf": "^10.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/gapi": "^0.0.47",
     "@types/gapi.auth2": "^0.0.61",
+    "@types/multer": "^2.0.0",
     "@types/node": "^20",
+    "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

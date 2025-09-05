@@ -54,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = () => {
     // Direct redirect to API endpoint (no fetch needed)
+    // must redirect, since goes to Google's own login page
     window.location.href = '/api/auth/google';
   };
 

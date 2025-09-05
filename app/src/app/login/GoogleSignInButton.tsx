@@ -9,7 +9,6 @@ export default function GoogleSignInButton() {
 
   const handleLogin = () => {
     setIsLoggingIn(true);
-    // This will redirect to your API route, which then redirects to Google
     login();
     // Note: Code after login() won't execute due to redirect
   };
