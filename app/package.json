@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "deploy": "next build && next start",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -17,6 +18,8 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/gapi": "^0.0.47",
+    "@types/gapi.auth2": "^0.0.61",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
