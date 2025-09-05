@@ -2,70 +2,122 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-type GoogleAuthContextType = {
-  accessToken: string | null;
-  setAccessToken: (token: string | null) => void;
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  picture: string;
+}
+
+interface AuthContextType {
+  user: User | null;
   isAuthenticated: boolean;
-  logout: () => void;
   loading: boolean;
-};
+  login: () => void;
+  logout: () => Promise<void>;
+  refetch: () => Promise<void>;
+}
 
-const GoogleAuthContext = createContext<GoogleAuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function GoogleAuthProvider({ children }: { children: ReactNode }) {
-  const [accessToken, setAccessTokenState] = useState<string | null>(null);
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const savedToken = sessionStorage.getItem('google_access_token');
-    if (savedToken) {
-      setAccessTokenState(savedToken);
+  const checkAuthStatus = async () => {
+    try {
+      const response = await fetch('/api/auth/status', {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.authenticated) {
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  useEffect(() => {
+    checkAuthStatus();
   }, []);
 
-  const setAccessToken = (token: string | null) => {
-    setAccessTokenState(token);
-    if (token) {
-      sessionStorage.setItem('google_access_token', token);
-    } else {
-      sessionStorage.removeItem('google_access_token');
-    }
+  const login = () => {
+    // Direct redirect to API endpoint (no fetch needed)
+    window.location.href = '/api/auth/google';
   };
 
-  const logout = () => {
-    setAccessToken(null);
-    if (accessToken) {
-      fetch(`https://oauth2.googleapis.com/revoke?token=${accessToken}`, {
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
         method: 'POST',
-        headers: {
-          'Content-type': 'application/x-www-form-urlencoded',
-        },
-      }).catch(console.error);
+        credentials: 'include',
+      });
+      setUser(null);
+    } catch (error) {
+      console.error('Logout failed:', error);
     }
   };
 
-  const isAuthenticated = !!accessToken;
-
-  const value = {
-    accessToken,
-    setAccessToken,
-    isAuthenticated,
-    logout,
-    loading,
+  const refetch = async () => {
+    setLoading(true);
+    await checkAuthStatus();
   };
+
+  const isAuthenticated = !!user;
 
   return (
-    <GoogleAuthContext.Provider value={value}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        isAuthenticated, 
+        loading, 
+        login, 
+        logout, 
+        refetch 
+      }}
+    >
       {children}
-    </GoogleAuthContext.Provider>
+    </AuthContext.Provider>
   );
 }
 
-export function useGoogleAuth() {
-  const context = useContext(GoogleAuthContext);
+export function useAuth() {
+  const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useGoogleAuth must be used within GoogleAuthProvider");
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
+}
+
+// Custom hook for making authenticated API calls
+export function useAuthenticatedFetch() {
+  const { refetch } = useAuth();
+
+  const authenticatedFetch = async (url: string, options?: RequestInit) => {
+    const response = await fetch(url, {
+      ...options,
+      credentials: 'include',
+    });
+
+    // If unauthorized, try to refetch auth status
+    if (response.status === 401) {
+      await refetch();
+      // If still not authenticated after refetch, the user needs to log in again
+    }
+
+    return response;
+  };
+
+  return authenticatedFetch;
 }
