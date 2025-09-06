@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { Button } from "@/components/ui/button"
 
 type PDFUploadProps = { onUpload : (text:string) => void }
 
@@ -11,13 +12,13 @@ export default function PDFUploader({onUpload}: PDFUploadProps ) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) {
-        setError("File error.")
+        setError("No file selected.")
         setFile(null)
         return;
     }
 
     if (selectedFile.type !== "application/pdf") {
-      setError("Please upload a PDF file.");
+      setError("Please upload a PDF.");
       return;
     }
     
@@ -49,12 +50,41 @@ export default function PDFUploader({onUpload}: PDFUploadProps ) {
   };
 
   return (
-    <div className='flex flex-col justify-center space-center align-center m-10'>
-      <input type="file" accept="application/pdf" onChange={handleFileChange} />
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <button onClick={handleUpload} disabled={!file || loading}>
+    <div className='flex flex-col justify-center items-center m-10 space-y-4'>
+      {/* Hide the actual file input */}
+      <input 
+        type="file" 
+        accept="application/pdf" 
+        onChange={handleFileChange}
+        className="hidden"
+        id="file-upload"
+      />
+      <div className='flex flex-row space-x-6'>
+      {/* Custom label that acts as the button */}
+      <input 
+        type="file" 
+        accept="application/pdf" 
+        onChange={handleFileChange}
+        className="hidden"
+        id="file-upload"
+      />
+
+      <label 
+        htmlFor="file-upload" 
+        className="px-4 py-2 bg-white text-black shadow-md border-1 border-zinc-100 rounded-lg cursor-pointer hover:bg-zinc-600 transition-colors inline-row text-center"
+      >
+        Select file...
+      </label>
+
+      <div className="text-sm text-gray-600 flex flex-col justify-center">
+        {file ? file.name : "No file chosen"}
+      </div>
+      </div>
+            
+      {error && <p className="text-red-500">{error}</p>}
+      <Button className="bg-black mt-4" onClick={handleUpload} disabled={!file || loading}>
         {loading ? "Uploading..." : "Upload PDF"}
-      </button>
+      </Button>
     </div>
   );
 }
