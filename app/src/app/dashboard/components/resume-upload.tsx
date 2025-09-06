@@ -49,7 +49,7 @@ export default function PDFUploader({onUpload}: PDFUploadProps ) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <div className='flex flex-col justify-center space-center align-center m-10'>
       <input type="file" accept="application/pdf" onChange={handleFileChange} />
       {error && <p style={{ color: "red" }}>{error}</p>}
       <button onClick={handleUpload} disabled={!file || loading}>
