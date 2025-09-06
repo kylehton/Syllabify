@@ -7,14 +7,10 @@ export default function Dashboard() {
     interface EventItem {
         name: string;
         date: string; // RFC3339 date string
-        type: string;
+        type: "exam" | "homework" | "project";
     }
       
-    interface EventsResponse {
-        dates: EventItem[];
-    }
-      
-    const [events, setEvents] = useState<EventsResponse | null>(null);
+    const [events, setEvents] = useState<EventItem[] | null>(null);
 
     const generateEvents = async (text: string) => {
         const res = await fetch ('/api/openai', {
@@ -31,9 +27,10 @@ export default function Dashboard() {
         generateEvents(text)
       };
 
+    if (events == null)
     return (
         <div className='flex justify-center'>
-            <PDFUploader onUpload={handleText}/>
+            <PDFUploader onUpload={handleText}/> 
         </div>
     )
 }

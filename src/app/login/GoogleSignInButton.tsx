@@ -2,16 +2,26 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/GoogleAuthContext"; // Updated import
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation";
+
 
 export default function GoogleSignInButton() {
   const { isAuthenticated, loading, login, logout, user } = useAuth();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  const router = useRouter();
 
   const handleLogin = () => {
     setIsLoggingIn(true);
     login();
     // Note: Code after login() won't execute due to redirect
   };
+
+  const handlePreviousLogin = () => {
+    console.log("routing to dashboard")
+    router.push("/dashboard")
+  }
 
   const handleLogout = async () => {
     try {
@@ -34,8 +44,8 @@ export default function GoogleSignInButton() {
   // Show user info and logout if authenticated
   if (isAuthenticated && user) {
     return (
-      <div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-gray-50 rounded-lg">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-gray-50 rounded-lg border-1 border-zinc-100 z-20">
+        <button onClick={handlePreviousLogin} className="flex items-center gap-3 cursor-pointer">
           <img 
             src={user.picture} 
             alt={user.name}
@@ -45,10 +55,10 @@ export default function GoogleSignInButton() {
             <div className="font-medium text-gray-900">{user.name}</div>
             <div className="text-gray-500">{user.email}</div>
           </div>
-        </div>
+        </button>
         <button 
           onClick={handleLogout}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm font-medium"
+          className="cursor-pointer px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm font-medium"
         >
           Sign Out
         </button>
@@ -58,15 +68,15 @@ export default function GoogleSignInButton() {
 
   // Show login button if not authenticated
   return (
-    <div className="flex flex-col items-center gap-2">
-      <button 
+    <div className="flex flex-col items-right gap-2">
+      <Button 
         onClick={handleLogin} 
         disabled={isLoggingIn}
-        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        className=""
       >
         {isLoggingIn ? (
           <>
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-4 h-4 border-2 border-white transition-transform ease-in-out hover:scale-110 border-t-transparent rounded-full animate-spin"></div>
             Redirecting...
           </>
         ) : (
@@ -80,7 +90,7 @@ export default function GoogleSignInButton() {
             Sign in with Google
           </>
         )}
-      </button>
+      </Button>
     </div>
   );
 }

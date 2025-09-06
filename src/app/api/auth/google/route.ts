@@ -15,7 +15,7 @@ export async function GET() {
     response_type: 'code',
     scope,
     access_type: 'offline',
-    prompt: 'consent',
+    prompt: 'select_account',
     state: 'random-state-value', // Use crypto.randomUUID() in production
   })}`;
 
