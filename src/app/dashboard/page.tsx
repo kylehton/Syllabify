@@ -1,40 +1,50 @@
 "use client";
 import PDFUploader from "./components/resume-upload"
-import { useState } from 'react'
-import { DataTableDemo } from "./components/event-table";
+import { useState, useEffect } from 'react'
+import { DataTable } from "./components/event-table";
+import { EventItem } from "./types/events";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
 
-    interface EventItem {
-        name: string;
-        date: string; // RFC3339 date string
-        type: "exam" | "homework" | "project";
-    }
-
-    const handleDeleteEvent = (item: EventItem) => {
-        setEvents(prevEvents => 
-          prevEvents?.filter(event => 
-            !(event.name === item.name && 
-              event.date === item.date && 
-              event.type === item.type)
-          ) || null
-        );
-      };
-    
-      const handleUpdateEvent = (oldItem: EventItem, newItem: EventItem) => {
-        setEvents(prevEvents => 
-          prevEvents?.map(event => 
-            (event.name === oldItem.name && 
-             event.date === oldItem.date && 
-             event.type === oldItem.type) 
-              ? newItem 
-              : event
-          ) || null
-        );
-      };
-      
     const [events, setEvents] = useState<EventItem[] | null>(null);
 
+    useEffect(() => {
+        const localEvents = localStorage.getItem("current_events")
+        if (localEvents != null) {
+            const parsedEvents = JSON.parse(localEvents)
+            setEvents(parsedEvents)
+        }
+    }, []);
+
+    const handleDeleteEvent = (item: EventItem) => {
+        const updatedEvents = events?.filter(event => event.id !== item.id) || null;
+        
+        setEvents(updatedEvents);
+        
+        if (updatedEvents) {
+            localStorage.setItem("current_events", JSON.stringify(updatedEvents));
+        } else {
+            localStorage.removeItem("current_events");
+        }
+    };
+    
+    const handleUpdateEvent = (updatedEvent: EventItem) => {
+        setEvents(prevEvents => 
+            prevEvents?.map(event => 
+                event.id === updatedEvent.id ? updatedEvent : event
+            ) || []
+        );
+        
+        // Also update localStorage
+        const updatedEvents = events?.map(event => 
+            event.id === updatedEvent.id ? updatedEvent : event
+        );
+        if (updatedEvents) {
+            localStorage.setItem("current_events", JSON.stringify(updatedEvents));
+        }
+    };
+      
     const generateEvents = async (text: string) => {
         try {
             const res = await fetch('/api/openai', {
@@ -42,21 +52,16 @@ export default function Dashboard() {
                 body: text
             });
             const eventJSON = await res.json();
+                    
+            const parsedEvents = JSON.parse(eventJSON.response);    
             
-            console.log('Raw API response:', eventJSON)
-            console.log('eventJSON.response:', eventJSON.response)
+            const eventsWithIds = parsedEvents.dates.map((event: any) => ({
+                ...event,
+                id: crypto.randomUUID()
+            }));
             
-            const parsedEvents = JSON.parse(eventJSON.response);
-            console.log('Parsed events:', parsedEvents)
-            console.log('Parsed events type:', typeof parsedEvents)
-            console.log('Parsed events keys:', Object.keys(parsedEvents))
-            
-            if (parsedEvents.dates) {
-                console.log('Found dates array:', parsedEvents.dates)
-                console.log('Dates array length:', parsedEvents.dates.length)
-            }
-            
-            setEvents(parsedEvents.dates);
+            setEvents(eventsWithIds);
+            localStorage.setItem("current_events", JSON.stringify(eventsWithIds))
         } catch (error) {
             console.error('Error generating events:', error);
             setEvents(null);
@@ -83,8 +88,19 @@ export default function Dashboard() {
         )
     } else {
         return (
-            <div>
-                <DataTableDemo data={events} onDeleteEvent={handleDeleteEvent} onUpdateEvent={handleUpdateEvent} />
+            <div className="w-full h-full flex flex-col">
+                <div className='flex flex-col justify-center items-center'>
+                    <div className="w-[90%] space-y-6 mt-10">
+                        <div id="header-elements" className="flex flex-row justify-between">
+                            <h1 className="font-semibold text-4xl">Current Syllabus Schedule</h1>
+                            <div className='flex flex-col space-y-2'>
+                            <Button variant='outline' className='bg-zinc-800 text-white'>Upload a New Syllabus</Button>
+                            <Button variant='outline' className='bg-zinc-300'>Add To Google Calendar</Button>
+                            </div>
+                        </div>
+                        <DataTable data={events} onDeleteEvent={handleDeleteEvent} onUpdateEvent={handleUpdateEvent} />
+                    </div>
+                </div>
             </div>
         )
     }
