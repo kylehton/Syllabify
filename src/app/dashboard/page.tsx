@@ -4,8 +4,12 @@ import { useState, useEffect } from 'react'
 import { DataTable } from "./components/event-table";
 import { EventItem } from "./types/events";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+
 
 export default function Dashboard() {
+
+    const router = useRouter();
 
     const [events, setEvents] = useState<EventItem[] | null>(null);
 
@@ -16,6 +20,15 @@ export default function Dashboard() {
             setEvents(parsedEvents)
         }
     }, []);
+
+    const handleReset = () => {
+        localStorage.removeItem("current_events")
+        setEvents(null)
+    }
+
+    const handleEventsCalendar = () => {
+
+    }
 
     const handleDeleteEvent = (item: EventItem) => {
         const updatedEvents = events?.filter(event => event.id !== item.id) || null;
@@ -94,8 +107,8 @@ export default function Dashboard() {
                         <div id="header-elements" className="flex flex-row justify-between">
                             <h1 className="font-semibold text-4xl">Current Syllabus Schedule</h1>
                             <div className='flex flex-col space-y-2'>
-                            <Button variant='outline' className='bg-zinc-800 text-white'>Upload a New Syllabus</Button>
-                            <Button variant='outline' className='bg-zinc-300'>Add To Google Calendar</Button>
+                            <Button variant='outline' className='cursor-pointer bg-zinc-700 text-white hover:bg-zinc-300 hover:text-black' onClick={handleReset}>Upload a New Syllabus</Button>
+                            <Button variant='outline' className='cursor-pointer bg-zinc-200 hover:bg-zinc-700 hover:text-white' onClick={handleEventsCalendar}>Add To Google Calendar</Button>
                             </div>
                         </div>
                         <DataTable data={events} onDeleteEvent={handleDeleteEvent} onUpdateEvent={handleUpdateEvent} />

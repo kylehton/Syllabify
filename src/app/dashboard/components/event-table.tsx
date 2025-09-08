@@ -197,7 +197,7 @@ export function DataTable({ data, onDeleteEvent, onUpdateEvent }: DataTableProps
 
             <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
+                <Button variant="ghost" className="ml-auto cursor-pointer">
                 Columns <ChevronDown />
                 </Button>
             </DropdownMenuTrigger>
@@ -281,6 +281,7 @@ export function DataTable({ data, onDeleteEvent, onUpdateEvent }: DataTableProps
         <div className="space-x-2">
           <Button
             variant="outline"
+            className="cursor-pointer transition-transform ease-in-out hover:scale-103"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
@@ -290,6 +291,7 @@ export function DataTable({ data, onDeleteEvent, onUpdateEvent }: DataTableProps
           <Button
             variant="outline"
             size="sm"
+            className="cursor-pointer transition-transform ease-in-out hover:scale-103"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >

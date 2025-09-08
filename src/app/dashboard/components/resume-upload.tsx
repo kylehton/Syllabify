@@ -71,7 +71,7 @@ export default function PDFUploader({onUpload}: PDFUploadProps ) {
 
       <label 
         htmlFor="file-upload" 
-        className="px-4 py-2 bg-white text-black shadow-md border-1 border-zinc-100 rounded-lg cursor-pointer hover:bg-zinc-600 transition-colors inline-row text-center"
+        className="px-4 py-2 bg-white text-black shadow-md border-1 border-zinc-100 rounded-lg cursor-pointer hover:bg-zinc-700 hover:text-white transition-colors inline-row text-center"
       >
         Select file...
       </label>
@@ -82,7 +82,7 @@ export default function PDFUploader({onUpload}: PDFUploadProps ) {
       </div>
             
       {error && <p className="text-red-500">{error}</p>}
-      <Button className="bg-black mt-4" onClick={handleUpload} disabled={!file || loading}>
+      <Button className="bg-black mt-4 transition-transform ease-in-out hover:scale-105 cursor-pointer" onClick={handleUpload} disabled={!file || loading}>
         {loading ? "Uploading..." : "Upload PDF"}
       </Button>
     </div>
