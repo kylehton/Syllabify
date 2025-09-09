@@ -42,7 +42,7 @@ export default function PDFUploader({onUpload}: PDFUploadProps ) {
       });
 
       const data = await res.json();
-      onUpload(data.text); 
+     onUpload(data.text); 
     } catch (err) {
       console.error(err);
       setError("Upload failed. Please try again.");
