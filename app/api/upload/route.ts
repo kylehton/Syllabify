@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import pdfParse from "pdf-parse";
 
+import path from "path";
+const filePath = path.join(process.cwd(), 'test/data/05-versions-space.pdf');
+
+
 export const POST = async (req: NextRequest) => {
   try {
     const contentType = req.headers.get("content-type") || "";
