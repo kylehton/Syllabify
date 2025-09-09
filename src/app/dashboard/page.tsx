@@ -26,8 +26,12 @@ export default function Dashboard() {
         setEvents(null)
     }
 
-    const handleEventsCalendar = () => {
-
+    const handleEventsCalendar = async () => {
+        const res = await fetchWithAuth('/api/calendar/events', {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(events)
+        })
     }
 
     const testGoogleCalendar = async () => {
