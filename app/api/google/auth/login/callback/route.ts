@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       name: user.name,
       picture: user.picture,
       accessToken: tokens.access_token,
-      tokenExpiry: Date.now() + tokens.expires_in * 1000, // ~1 hour
+      tokenExpiry: Date.now() + tokens.expires_in * 1000, // 1 hour
     })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()

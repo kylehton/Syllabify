@@ -16,7 +16,7 @@ export async function GET() {
     scope,
     access_type: 'offline',
     prompt: 'select_account',
-    state: 'random-state-value', // Use crypto.randomUUID() in production
+    state: crypto.randomUUID(),
   })}`;
 
   return NextResponse.redirect(authUrl);
