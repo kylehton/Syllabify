@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: string;
@@ -21,6 +22,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+
+  const router = useRouter();
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: 'include',
       });
       setUser(null);
+      router.push("/")
     } catch (error) {
       console.error('Logout failed:', error);
     }

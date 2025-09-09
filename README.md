@@ -1,4 +1,4 @@
-### Syllabify
+# Syllabify
 
 ## About the App
 This is an application built to ease the experience of entering new classes with new syllabi. Syllabify aims to
@@ -42,11 +42,11 @@ is added)
 
 ## Client-Side Pages
 
-# Landing Page - [login-page.tsx]
+### Landing Page - [login-page.tsx]
 This page is the landing page, containing the name of the application, as well as the entry point to sign in/up and use
 the application
 
-# Main Dashboard - [/dashboard/page.tsx]
+### Main Dashboard - [/dashboard/page.tsx]
 I used the Next.js App Router for routing between pages, and so I followed the appropriate naming convention. You will see
 in various parts of the codebase that it routes to '/dashboard', which points to the dashboard directory and its page.tsx.
 This page contains all of the functionality and main components, imported from the '/dashboard/components' folder.
@@ -55,7 +55,7 @@ This page contains all of the functionality and main components, imported from t
 ## Server-Side Endpoints
 Following the standard single-origin convention, all endpoints are in the [/api] folder.
 
-# Google Status/Authentication and Calendar - [/api/google]
+### Google Status/Authentication and Calendar - [/api/google]
 All endpoints revolving/including usage of Google authentication and APIs.
 
 1. Log In - [/auth/login] + [/auth/login/callback]
@@ -77,12 +77,12 @@ The calendar endpoint provides a function to post events to a calendar. It uses 
 event uploads, since there is no efficient batch requesting, and to stay within rate limiting of Google API.
 
 
-# Syllabus Upload - [/api/upload]
+### Syllabus Upload - [/api/upload]
 This endpoint takes in the resume in PDF format in the request body, and parses it into text. Through this, it gets
 sent back to the client-side page, where it is then routed to the below endpoint.
 
 
-# OpenAI - [/api/openai]
+### OpenAI - [/api/openai]
 This endpoint handles the parsing and analysis of a text-converted syllabus, using a created system prompt and the 
 Chat Completions API. The system prompt provides guidelines for how to pull the dates out of the resume, including
 the JSON format in which to return them. It also uses the RFC 3339 time format, which is the same one that Google
