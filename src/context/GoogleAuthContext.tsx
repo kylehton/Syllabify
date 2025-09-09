@@ -21,6 +21,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -35,9 +36,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (data.authenticated) {
           setUser(data.user);
         } else {
+          console.log("NOT AUTHENTICATED")
           setUser(null);
         }
       } else {
+        console.log("RESPONSE NOT OK")
         setUser(null);
       }
     } catch (error) {

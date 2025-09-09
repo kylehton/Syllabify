@@ -4,7 +4,6 @@ import { SignJWT } from 'jose';
 
 interface GoogleTokenResponse {
   access_token: string;
-  refresh_token: string;
   expires_in: number;
   token_type: string;
   scope: string;
@@ -32,7 +31,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Exchange code for tokens
+    // Exchange code for access token (no refresh token)
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -52,7 +51,7 @@ export async function GET(request: NextRequest) {
     const tokens: GoogleTokenResponse = await tokenResponse.json();
 
     // Get user info
-    const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    const userResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
 
@@ -62,7 +61,7 @@ export async function GET(request: NextRequest) {
 
     const user: GoogleUserInfo = await userResponse.json();
 
-    // Create JWT session token
+    // Create JWT with only access token (no refresh token)
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
     const sessionToken = await new SignJWT({
       userId: user.id,
@@ -70,12 +69,11 @@ export async function GET(request: NextRequest) {
       name: user.name,
       picture: user.picture,
       accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
-      tokenExpiry: Date.now() + (tokens.expires_in * 1000),
+      tokenExpiry: Date.now() + tokens.expires_in * 1000, // ~1 hour
     })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
-      .setExpirationTime('24h')
+      .setExpirationTime('1h') // JWT matches access token expiry
       .sign(secret);
 
     // Set httpOnly cookie
@@ -84,14 +82,14 @@ export async function GET(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60, // 24 hours
+      maxAge: tokens.expires_in,
       path: '/',
     });
 
     // Redirect to dashboard
     return NextResponse.redirect(`${process.env.AUTH_URL}/dashboard`);
-
-  } catch (error) {
-    console.error('OAuth failed')
+  } catch (err) {
+    console.error('OAuth failed', err);
+    return NextResponse.redirect(`${process.env.AUTH_URL}/login?error=oauth_failed`);
   }
-};
+}

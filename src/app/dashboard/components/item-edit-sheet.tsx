@@ -9,7 +9,6 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet"
 import { ReactNode, useState } from 'react';
 import { EventItem } from "../types/events";

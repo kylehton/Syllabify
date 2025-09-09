@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react'
 import { DataTable } from "./components/event-table";
 import { EventItem } from "./types/events";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useAuthenticatedFetch } from "@/context/GoogleAuthContext";
 
 
 export default function Dashboard() {
 
-    const router = useRouter();
+    const fetchWithAuth = useAuthenticatedFetch();
 
     const [events, setEvents] = useState<EventItem[] | null>(null);
 
@@ -28,6 +28,21 @@ export default function Dashboard() {
 
     const handleEventsCalendar = () => {
 
+    }
+
+    const testGoogleCalendar = async () => {
+
+        const tokenRes = await fetch('/api/auth/status', {
+            method: "GET"
+        })
+
+        console.log("Should be updated:", tokenRes.json())
+
+        const res = await fetchWithAuth('/api/calendar/events', { method: "GET" })
+
+        console.log("res direct:", res)
+        const eventsReturned = await res.json();
+        console.log("1:", eventsReturned.events)
     }
 
     const handleDeleteEvent = (item: EventItem) => {
@@ -49,7 +64,6 @@ export default function Dashboard() {
             ) || []
         );
         
-        // Also update localStorage
         const updatedEvents = events?.map(event => 
             event.id === updatedEvent.id ? updatedEvent : event
         );
@@ -68,7 +82,7 @@ export default function Dashboard() {
                     
             const parsedEvents = JSON.parse(eventJSON.response);    
             
-            const eventsWithIds = parsedEvents.dates.map((event: any) => ({
+            const eventsWithIds = parsedEvents.dates.map((event: EventItem) => ({
                 ...event,
                 id: crypto.randomUUID()
             }));
@@ -106,6 +120,7 @@ export default function Dashboard() {
                     <div className="w-[90%] space-y-6 mt-10">
                         <div id="header-elements" className="flex flex-row justify-between">
                             <h1 className="font-semibold text-4xl">Current Syllabus Schedule</h1>
+                            <Button variant='outline' onClick={testGoogleCalendar}>Testing G Calendar</Button>
                             <div className='flex flex-col space-y-2'>
                             <Button variant='outline' className='cursor-pointer bg-zinc-700 text-white hover:bg-zinc-300 hover:text-black' onClick={handleReset}>Upload a New Syllabus</Button>
                             <Button variant='outline' className='cursor-pointer bg-zinc-200 hover:bg-zinc-700 hover:text-white' onClick={handleEventsCalendar}>Add To Google Calendar</Button>

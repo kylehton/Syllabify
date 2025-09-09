@@ -98,7 +98,7 @@ export function DataTable({ data, onDeleteEvent, onUpdateEvent }: DataTableProps
     },
     {
       accessorKey: "date",
-      header: () => <div className="text-right">Date</div>,
+      header: () => <div className="text-right">Due Date</div>,
       cell: ({ row }) => {
         const dateValue = (row.getValue("date")) as string | Date
         const formatted = new Date(dateValue).toLocaleDateString() 
