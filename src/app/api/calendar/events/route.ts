@@ -14,7 +14,6 @@ interface GoogleCalendarEvent {
 function mapDateToEvent(item: EventItem): GoogleCalendarEvent {
   const dueDate = new Date(item.date); // the due date
   const startDate = new Date(dueDate);
-  startDate.setDate(dueDate.getDate() - 1); // day before
 
   // Set start at 00:00 and end at 23:59 on the day before
   const startDateTime = new Date(
