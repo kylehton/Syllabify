@@ -6,34 +6,19 @@ import { EventItem } from '../../../dashboard/types/events'
 
 interface GoogleCalendarEvent {
   summary: string;
-  start: { dateTime: string };
-  end: { dateTime: string };
+  start: { date: string };
+  end: { date: string };
   description?: string;
 }
 
 function mapDateToEvent(item: EventItem): GoogleCalendarEvent {
-  const dueDate = new Date(item.date); // the due date
-  const startDate = new Date(dueDate);
-
-  // take up full day on calendar
-  const startDateTime = new Date(
-    startDate.getFullYear(),
-    startDate.getMonth(),
-    startDate.getDate(),
-    0, 0, 0
-  ).toISOString();
-
-  const endDateTime = new Date(
-    startDate.getFullYear(),
-    startDate.getMonth(),
-    startDate.getDate(),
-    23, 59, 0
-  ).toISOString();
-
+ 
+  const dateString = item.date.split('T')[0]; // Gets YYYY-MM-DD from RFC 3339
+  
   return {
     summary: item.name,
-    start: { dateTime: startDateTime },
-    end: { dateTime: endDateTime },
+    start: { date: dateString },
+    end: { date: dateString },
     description: `Type: ${item.type}`
   };
 }
