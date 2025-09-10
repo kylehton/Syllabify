@@ -129,9 +129,15 @@ export default function Dashboard() {
                 ...event,
                 id: crypto.randomUUID()
             }));
+            if (eventsWithIds.length == 0){
+                router.push('/dashboard')
+                alert("Invalid PDF: could not be parsed");
+            } else {
+                setEvents(eventsWithIds);
+                localStorage.setItem("current_events", JSON.stringify(eventsWithIds))
+            }
             
-            setEvents(eventsWithIds);
-            localStorage.setItem("current_events", JSON.stringify(eventsWithIds))
+        
         } catch (error) {
             console.error('Error generating events:', error);
             setEvents(null);
